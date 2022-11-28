@@ -19,10 +19,11 @@ const app = express()
 app.use(express.json())
 if (process.env.NODE_ENV === 'development') {
   app.use(morgan('dev'))
+} else {
+  app.get('/', (req, res) => {
+    res.send('Api is running!')
+  })
 }
-app.get('/', (req, res) => {
-  res.send('Api is running!')
-})
 app.use('/api/products', productRoutes)
 app.use('/api/users', userRoutes)
 app.use('/api/orders', orderRoutes)
