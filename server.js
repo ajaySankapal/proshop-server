@@ -17,13 +17,7 @@ connectDB()
 //to accept the json data in the body
 const app = express()
 app.use(express.json())
-if (process.env.NODE_ENV === 'development') {
-  app.use(morgan('dev'))
-} else {
-  app.get('/', (req, res) => {
-    res.send('Api is running!')
-  })
-}
+
 app.use('/api/products', productRoutes)
 app.use('/api/users', userRoutes)
 app.use('/api/orders', orderRoutes)
@@ -36,6 +30,18 @@ app.get('/api/config/paypal', (req, res) => {
 //make the folder static
 const __dirname = path.resolve() //not excessible if we are using es6 module (import syntax)
 app.use('/uploads', express.static(path.join(__dirname, '/uploads')))
+
+if (process.env.NODE_ENV === 'production') {
+  app.use(express.static(path.join(__dirname, '/frontend/build')))
+
+  app.get('*', (req, res) =>
+    res.sendFile(path.resolve(__dirname, 'frontend', 'build', 'index.html'))
+  )
+} else {
+  app.get('/', (req, res) => {
+    res.send('API is running....')
+  })
+}
 
 app.use(notFound)
 app.use(errorHandler)
